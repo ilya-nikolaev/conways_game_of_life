@@ -1,6 +1,5 @@
 import random
 import itertools
-import sys
 
 
 class Field:
@@ -37,8 +36,6 @@ class Field:
         if field_hash in self._previous_states:
             self._repeats = True
         self._previous_states.add(field_hash)
-
-        print(sys.getsizeof(self._previous_states))
 
         self._field = new_field
 
