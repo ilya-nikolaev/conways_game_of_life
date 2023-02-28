@@ -1,12 +1,11 @@
-import random
-import itertools
+import numpy as np
 
 
 class Field:
     def __init__(self, width: int, height: int):
         self._width: int = width
         self._height: int = height
-        self._field: list[list[bool]] = [[False] * width for _ in range(height)]
+        self._field = np.zeros(self.size, dtype=int)
 
         self._previous_states = set()
         self._repeats = False
@@ -14,23 +13,23 @@ class Field:
     @classmethod
     def from_random(cls, width: int, height: int, fill: float = 0.5):
         filled_per_row = int(fill * width)
-        row_values = [True] * filled_per_row + [False] * (width - filled_per_row)
+        row_values = np.zeros(width, dtype=int)
+        row_values[:filled_per_row] = np.ones(filled_per_row, dtype=int)
 
         obj = cls(width, height)
-        obj._field = [random.sample(row_values, width) for _ in range(height)]
+        for i in range(height):
+            obj._field[i] = np.random.choice(row_values, width)
 
         return obj
 
     def step(self):
-        new_field = [[False] * self._width for _ in range(self._height)]
+        new_field = np.zeros(self.size, dtype=int)
+        neighbours_count = self.count_neighbours()
 
-        for y, row in enumerate(self._field):
-            for x, e in enumerate(row):
-                neighbours_count = self.count_neighbours(x, y)
-                if not e and neighbours_count == 3:
-                    new_field[y][x] = True
-                elif e and neighbours_count in (2, 3):
-                    new_field[y][x] = True
+        mask = np.logical_and(self._field == 1, np.logical_or(neighbours_count == 2, neighbours_count == 3))
+        new_field[mask] = True
+        mask = np.logical_and(self._field == 0, neighbours_count == 3)
+        new_field[mask] = True
 
         field_hash = self.get_field_hash(new_field)
         if field_hash in self._previous_states:
@@ -39,13 +38,17 @@ class Field:
 
         self._field = new_field
 
-    def count_neighbours(self, x: int, y: int):
-        return sum(self._field[(y + dy) % self._height][(x + dx) % self.width]
-                   for dx, dy in itertools.product((-1, 0, 1), repeat=2) if dx or dy)
+    def count_neighbours(self) -> np.ndarray:
+        return (np.roll(self._field, 1, axis=0) + np.roll(self._field, -1, axis=0) +
+                np.roll(self._field, 1, axis=1) + np.roll(self._field, -1, axis=1) +
+                np.roll(self._field, (1, 1), axis=(0, 1)) + np.roll(self._field, (-1, -1), axis=(0, 1)) +
+                np.roll(self._field, (-1, 1), axis=(0, 1)) + np.roll(self._field, (1, -1), axis=(0, 1)))
 
     @staticmethod
-    def get_field_hash(field: list[list[int]]):
-        return hash(tuple(e for row in field for e in row))
+    def get_field_hash(field: np.ndarray) -> int:
+        # noinspection PyTypeChecker
+        list_field: list[list[int]] = field.tolist()
+        return hash(tuple(e for row in list_field for e in row))
 
     @property
     def repeats(self):
@@ -58,6 +61,10 @@ class Field:
     @property
     def height(self):
         return self._height
+
+    @property
+    def size(self):
+        return self._height, self._width
 
     @property
     def field(self):
