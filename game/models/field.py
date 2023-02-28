@@ -1,3 +1,5 @@
+import itertools
+
 import numpy as np
 
 
@@ -39,10 +41,8 @@ class Field:
         self._field = new_field
 
     def count_neighbours(self) -> np.ndarray:
-        return (np.roll(self._field, 1, axis=0) + np.roll(self._field, -1, axis=0) +
-                np.roll(self._field, 1, axis=1) + np.roll(self._field, -1, axis=1) +
-                np.roll(self._field, (1, 1), axis=(0, 1)) + np.roll(self._field, (-1, -1), axis=(0, 1)) +
-                np.roll(self._field, (-1, 1), axis=(0, 1)) + np.roll(self._field, (1, -1), axis=(0, 1)))
+        return sum(np.roll(self._field, shift, axis=(0, 1))
+                   for shift in itertools.product((-1, 0, 1), repeat=2) if any(shift))
 
     @staticmethod
     def get_field_hash(field: np.ndarray) -> int:
