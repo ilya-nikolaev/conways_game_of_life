@@ -19,13 +19,15 @@ class UI:
 
         self._field = Field.from_random(self.config.cell_width, self.config.cell_height, 0.5)
         self.running = True
+        self.pause = False
 
     def run(self):
         while self.running:
             self.handle_events()
 
-            self.draw()
-            self._field.step()
+            if not self.pause:
+                self.draw()
+                self._field.step()
 
             if self._field.repeats:
                 self._field = Field.from_random(self.config.cell_width, self.config.cell_height)
@@ -43,6 +45,11 @@ class UI:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    self.pause = not self.pause
+                if event.button == 3:
+                    self._field = Field.from_random(self.config.cell_width, self.config.cell_height)
 
     def get_cell_rect(self, x: int, y: int) -> pygame.rect.Rect:
         return pygame.rect.Rect(
