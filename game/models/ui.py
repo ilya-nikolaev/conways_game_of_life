@@ -15,7 +15,8 @@ class UI:
         self.screen = pygame.display.set_mode(self.config.window_size)
         self.clock = pygame.time.Clock()
 
-        self._field = Field.from_random(self.config.cell_width, self.config.cell_height, self.config.random_fill_part)
+        self._field = Field.from_random(self.config.cell_width, self.config.cell_height,
+                                        self.config.random_fill_part)
         self.running = True
         self.pause = False
 
@@ -28,7 +29,7 @@ class UI:
                 self._field.step()
 
             if self._field.repeats and self.config.auto_restart:
-                self._field = Field.from_random(self.config.cell_width, self.config.cell_height)
+                self.restart()
 
             self.clock.tick(self.config.max_game_speed)
 
@@ -57,4 +58,5 @@ class UI:
             self.config.cell_side)
 
     def restart(self):
-        self._field = Field.from_random(self.config.cell_width, self.config.cell_height, 0.5)
+        self._field = Field.from_random(self.config.cell_width, self.config.cell_height,
+                                        self.config.random_fill_part)

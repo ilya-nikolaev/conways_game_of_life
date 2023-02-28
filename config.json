@@ -1,8 +1,11 @@
 {
   "cell_width": 64,
   "cell_height": 64,
+
   "cell_side": 4,
+
   "auto_restart": true,
   "max_game_speed": 60,
+
   "random_fill_part": 0.5
 }
