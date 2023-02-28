@@ -3,8 +3,6 @@ import pygame
 from game.config_loader import load_config
 from game.models.field import Field
 
-FPS = 60
-
 PALETTE = ((0, 0, 0), (0, 255, 0))
 
 
@@ -17,7 +15,7 @@ class UI:
         self.screen = pygame.display.set_mode(self.config.window_size)
         self.clock = pygame.time.Clock()
 
-        self._field = Field.from_random(self.config.cell_width, self.config.cell_height, 0.5)
+        self._field = Field.from_random(self.config.cell_width, self.config.cell_height, self.config.random_fill_part)
         self.running = True
         self.pause = False
 
@@ -29,10 +27,10 @@ class UI:
                 self.draw()
                 self._field.step()
 
-            if self._field.repeats:
+            if self._field.repeats and self.config.auto_restart:
                 self._field = Field.from_random(self.config.cell_width, self.config.cell_height)
 
-            self.clock.tick(FPS)
+            self.clock.tick(self.config.max_game_speed)
 
     def draw(self):
         for y, row in enumerate(self._field.field):
@@ -49,7 +47,7 @@ class UI:
                 if event.button == 1:
                     self.pause = not self.pause
                 if event.button == 3:
-                    self._field = Field.from_random(self.config.cell_width, self.config.cell_height)
+                    self.restart()
 
     def get_cell_rect(self, x: int, y: int) -> pygame.rect.Rect:
         return pygame.rect.Rect(
@@ -57,3 +55,6 @@ class UI:
             y * self.config.cell_side,
             self.config.cell_side,
             self.config.cell_side)
+
+    def restart(self):
+        self._field = Field.from_random(self.config.cell_width, self.config.cell_height, 0.5)

@@ -9,6 +9,11 @@ class GameConfig:
 
     cell_side: int
 
+    auto_restart: bool
+    max_game_speed: int
+
+    random_fill_part: float
+
     @property
     def window_size(self):
         return self.cell_width * self.cell_side, self.cell_height * self.cell_side
