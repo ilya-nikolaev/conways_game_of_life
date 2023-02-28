@@ -1,13 +1,8 @@
 import pygame
 
+from game.config_loader import load_config
 from game.models.field import Field
 
-CELL_WIDTH = 128
-CELL_HEIGHT = 128
-
-CELL_SIDE = 4
-
-SIZE = WIDTH, HEIGHT = CELL_WIDTH * CELL_SIDE, CELL_HEIGHT * CELL_SIDE
 FPS = 60
 
 PALETTE = ((0, 0, 0), (0, 255, 0))
@@ -17,10 +12,12 @@ class UI:
     def __init__(self):
         pygame.init()
 
-        self.screen = pygame.display.set_mode(SIZE)
+        self.config = load_config()
+
+        self.screen = pygame.display.set_mode(self.config.window_size)
         self.clock = pygame.time.Clock()
 
-        self._field = Field.from_random(CELL_WIDTH, CELL_HEIGHT, 0.2)
+        self._field = Field.from_random(self.config.cell_width, self.config.cell_height, 0.5)
         self.running = True
 
     def run(self):
@@ -31,7 +28,7 @@ class UI:
             self._field.step()
 
             if self._field.repeats:
-                self._field = Field.from_random(CELL_WIDTH, CELL_HEIGHT)
+                self._field = Field.from_random(self.config.cell_width, self.config.cell_height)
 
             self.clock.tick(FPS)
 
@@ -47,6 +44,9 @@ class UI:
             if event.type == pygame.QUIT:
                 self.running = False
 
-    @staticmethod
-    def get_cell_rect(x: int, y: int) -> pygame.rect.Rect:
-        return pygame.rect.Rect(x * CELL_SIDE, y * CELL_SIDE, CELL_SIDE, CELL_SIDE)
+    def get_cell_rect(self, x: int, y: int) -> pygame.rect.Rect:
+        return pygame.rect.Rect(
+            x * self.config.cell_side,
+            y * self.config.cell_side,
+            self.config.cell_side,
+            self.config.cell_side)
