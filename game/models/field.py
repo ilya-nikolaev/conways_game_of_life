@@ -28,9 +28,9 @@ class Field:
         new_field = np.zeros(self.size, dtype=int)
         neighbours_count = self.count_neighbours()
 
-        mask = np.logical_and(self._field == 1, np.logical_or(neighbours_count == 2, neighbours_count == 3))
-        new_field[mask] = True
-        mask = np.logical_and(self._field == 0, neighbours_count == 3)
+        mask = np.logical_or(
+            np.logical_and(self._field == 1, np.logical_or(neighbours_count == 2, neighbours_count == 3)),
+            np.logical_and(self._field == 0, neighbours_count == 3))
         new_field[mask] = True
 
         field_hash = self.get_field_hash(new_field)
@@ -46,9 +46,7 @@ class Field:
 
     @staticmethod
     def get_field_hash(field: np.ndarray) -> int:
-        # noinspection PyTypeChecker
-        list_field: list[list[int]] = field.tolist()
-        return hash(tuple(e for row in list_field for e in row))
+        return hash(field.tobytes())
 
     @property
     def repeats(self):
