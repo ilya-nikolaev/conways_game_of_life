@@ -31,7 +31,7 @@ class Field:
         mask = np.logical_or(
             np.logical_and(self._field == 1, np.logical_or(neighbours_count == 2, neighbours_count == 3)),
             np.logical_and(self._field == 0, neighbours_count == 3))
-        new_field[mask] = True
+        new_field[mask] = 1
 
         field_hash = self.get_field_hash(new_field)
         if field_hash in self._previous_states:
