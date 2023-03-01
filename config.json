@@ -1,10 +1,11 @@
 {
-  "cell_width": 128,
-  "cell_height": 128,
+  "cell_width": 192,
+  "cell_height": 108,
 
-  "cell_side": 4,
+  "cell_side": 10,
 
   "auto_restart": true,
+  "fullscreen": true,
   "max_game_speed": 60,
 
   "random_fill_part": 0.5

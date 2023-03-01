@@ -12,7 +12,8 @@ class UI:
 
         self.config = load_config()
 
-        self.screen = pygame.display.set_mode(self.config.window_size)
+        fullscreen = (pygame.FULLSCREEN,) if self.config.fullscreen else ()
+        self.screen = pygame.display.set_mode(self.config.window_size, *fullscreen)
         self.clock = pygame.time.Clock()
 
         self._field = Field.from_random(self.config.cell_width, self.config.cell_height,
@@ -44,11 +45,14 @@ class UI:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     self.pause = not self.pause
                 if event.button == 3:
                     self.restart()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    self.running = False
 
     def get_cell_rect(self, x: int, y: int) -> pygame.rect.Rect:
         return pygame.rect.Rect(

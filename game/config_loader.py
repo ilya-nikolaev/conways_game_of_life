@@ -10,6 +10,7 @@ class GameConfig:
     cell_side: int
 
     auto_restart: bool
+    fullscreen: bool
     max_game_speed: int
 
     random_fill_part: float
